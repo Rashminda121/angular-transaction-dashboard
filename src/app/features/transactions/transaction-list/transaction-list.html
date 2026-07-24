@@ -1,1 +1,25 @@
-<p>transaction-list works!</p>
+@if (transactions$ | async; as transactions) {
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Currency</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Country</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (transaction of transactions; track transaction.transactionId) {
+        <tr>
+          <td>{{ transaction.transactionId }}</td>
+          <td>{{ transaction.currency }}</td>
+          <td>{{ transaction.status }}</td>
+          <td>{{ transaction.submitDate | date }}</td>
+          <td>{{ transaction.country }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

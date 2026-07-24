@@ -1,9 +1,15 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { TransactionService } from '../services/transaction-service';
 
 @Component({
   selector: 'app-transaction-list',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './transaction-list.html',
   styleUrl: './transaction-list.scss',
 })
-export class TransactionList {}
+export class TransactionList {
+  private readonly transactionService = inject(TransactionService);
+
+  readonly transactions$ = this.transactionService.getTransactions();
+}
