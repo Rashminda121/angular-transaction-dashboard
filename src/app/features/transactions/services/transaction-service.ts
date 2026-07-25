@@ -45,4 +45,10 @@ export class TransactionService {
         };
       });
   }
+
+  getTransactionById(id: string): Observable<Transaction | undefined> {
+    return this.getTransactions().pipe(
+      map((transactions) => transactions.find((t) => t.transactionId === id)),
+    );
+  }
 }

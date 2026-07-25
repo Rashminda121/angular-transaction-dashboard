@@ -1,25 +1,372 @@
-@if (transactions$ | async; as transactions) {
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Currency</th>
-        <th>Status</th>
-        <th>Date</th>
-        <th>Country</th>
-      </tr>
-    </thead>
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <!-- Filter Section -->
 
-    <tbody>
-      @for (transaction of transactions; track transaction.transactionId) {
+  <div class="border-b border-gray-200 bg-white p-6">
+    <div class="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800">Transactions</h2>
+
+        <p class="text-sm text-gray-500">Filter and manage transaction records.</p>
+      </div>
+
+      <div class="rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
+        {{ totalRecords }} Records
+      </div>
+    </div>
+
+    <!-- Filters -->
+
+    <div class="flex flex-col gap-5">
+      <!-- Primary Filters -->
+
+      <div class="flex flex-wrap gap-5">
+        <!-- Transaction -->
+
+        <div class="w-full lg:flex-[2] lg:min-w-[320px]">
+          <label class="mb-2 block text-sm font-medium text-gray-700"> Transaction ID </label>
+
+          <input
+            type="text"
+            [(ngModel)]="transactionIdSearch"
+            placeholder="Search transaction..."
+            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+
+        <!-- Currency -->
+
+        <div class="w-full sm:flex-1 sm:min-w-[180px]">
+          <label class="mb-2 block text-sm font-medium text-gray-700"> Currency </label>
+
+          <select
+            [(ngModel)]="selectedCurrency"
+            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          >
+            <option value="">All</option>
+
+            @for (currency of currencies; track currency) {
+              <option [value]="currency">
+                {{ currency }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <!-- Country -->
+
+        <div class="w-full sm:flex-1 sm:min-w-[180px]">
+          <label class="mb-2 block text-sm font-medium text-gray-700"> Country </label>
+
+          <select
+            [(ngModel)]="selectedCountry"
+            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          >
+            <option value="">All</option>
+
+            @for (country of countries; track country) {
+              <option [value]="country">
+                {{ country }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <!-- Status -->
+
+        <div class="relative w-full sm:flex-1 sm:min-w-[220px]">
+          <label class="mb-2 block text-sm font-medium text-gray-700"> Status </label>
+
+          <button
+            type="button"
+            (click)="toggleStatusDropdown()"
+            class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm transition hover:border-blue-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          >
+            <span class="truncate">
+              {{ selectedStatusText }}
+            </span>
+
+            <svg
+              class="h-4 w-4 transition"
+              [class.rotate-180]="statusDropdownOpen"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          @if (statusDropdownOpen) {
+            <div
+              class="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
+            >
+              <!-- Header -->
+
+              <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+                <span class="text-sm font-semibold text-gray-700"> Select Status </span>
+
+                <button
+                  type="button"
+                  (click)="statusDropdownOpen = false"
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100 hover:cursor-pointer"
+                  aria-label="Close status filter"
+                >
+                  <lucide-angular [img]="Icons.X" class="h-4 w-4"></lucide-angular>
+                </button>
+              </div>
+
+              <!-- Options -->
+
+              @for (status of statuses; track status) {
+                <label
+                  class="flex cursor-pointer items-center gap-3 px-4 py-3 transition hover:bg-gray-50"
+                >
+                  <input
+                    type="checkbox"
+                    [checked]="selectedStatuses.includes(status)"
+                    (change)="toggleStatus(status)"
+                    class="h-4 w-4 rounded border-gray-300 text-blue-600"
+                  />
+
+                  <span class="text-sm text-gray-700">
+                    {{ status }}
+                  </span>
+                </label>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Date Filters -->
+
+      <div class="flex flex-wrap gap-5">
+        <!-- From -->
+
+        <div class="w-full sm:flex-1 sm:min-w-[220px] lg:max-w-xs">
+          <label class="mb-2 block text-sm font-medium text-gray-700"> From </label>
+
+          <input
+            type="date"
+            [(ngModel)]="fromDate"
+            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+
+        <!-- To -->
+
+        <div class="w-full sm:flex-1 sm:min-w-[220px] lg:max-w-xs">
+          <label class="mb-2 block text-sm font-medium text-gray-700"> To </label>
+
+          <input
+            type="date"
+            [(ngModel)]="toDate"
+            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+
+    <div
+      class="mt-6 flex flex-col gap-4 border-t border-gray-200 pt-5 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-gray-600"> Rows per page </span>
+
+        <select
+          [value]="pageSize"
+          (change)="changePageSize($any($event.target).value)"
+          class="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+        >
+          @for (size of pageSizes; track size) {
+            <option [value]="size">
+              {{ size }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <button
+        (click)="clearFilters()"
+        class="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
+      >
+        Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= Table ================= -->
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full">
+      <thead class="bg-gray-50">
         <tr>
-          <td>{{ transaction.transactionId }}</td>
-          <td>{{ transaction.currency }}</td>
-          <td>{{ transaction.status }}</td>
-          <td>{{ transaction.submitDate | date }}</td>
-          <td>{{ transaction.country }}</td>
+          <th
+            (click)="sort('transactionId')"
+            class="cursor-pointer border-b border-gray-200 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-600 hover:bg-gray-100"
+          >
+            <div class="flex items-center gap-2">
+              Transaction ID
+
+              @if (sortColumn === 'transactionId') {
+                <span class="text-blue-600">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              }
+            </div>
+          </th>
+
+          <th
+            (click)="sort('currency')"
+            class="cursor-pointer border-b border-gray-200 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-600 hover:bg-gray-100"
+          >
+            <div class="flex items-center gap-2">
+              Currency
+
+              @if (sortColumn === 'currency') {
+                <span class="text-blue-600">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              }
+            </div>
+          </th>
+
+          <th
+            (click)="sort('status')"
+            class="cursor-pointer border-b border-gray-200 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-600 hover:bg-gray-100"
+          >
+            <div class="flex items-center gap-2">
+              Status
+
+              @if (sortColumn === 'status') {
+                <span class="text-blue-600">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              }
+            </div>
+          </th>
+
+          <th
+            (click)="sort('submitDate')"
+            class="cursor-pointer border-b border-gray-200 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-600 hover:bg-gray-100"
+          >
+            <div class="flex items-center gap-2">
+              Submit Date
+
+              @if (sortColumn === 'submitDate') {
+                <span class="text-blue-600">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              }
+            </div>
+          </th>
+
+          <th
+            (click)="sort('country')"
+            class="cursor-pointer border-b border-gray-200 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-600 hover:bg-gray-100"
+          >
+            <div class="flex items-center gap-2">
+              Country
+
+              @if (sortColumn === 'country') {
+                <span class="text-blue-600">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              }
+            </div>
+          </th>
         </tr>
-      }
-    </tbody>
-  </table>
-}
+      </thead>
+
+      <tbody class="divide-y divide-gray-100">
+        @for (transaction of pagedTransactions; track transaction.transactionId) {
+          <tr
+            (click)="viewTransaction(transaction.transactionId)"
+            class="text-sm md:text-base cursor-pointer transition-colors hover:bg-gray-50"
+          >
+            <td class="whitespace-nowrap px-6 py-4">
+              <span class="font-medium text-gray-800">
+                {{ transaction.transactionId }}
+              </span>
+            </td>
+
+            <td class="whitespace-nowrap px-6 py-4 text-gray-700">
+              {{ transaction.currency }}
+            </td>
+
+            <td class="whitespace-nowrap px-6 py-4">
+              <span
+                class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
+                [ngClass]="{
+                  'bg-green-100 text-green-700': transaction.status.toLowerCase() === 'completed',
+                  'bg-red-100 text-red-700': transaction.status.toLowerCase() === 'failed',
+                  'bg-yellow-100 text-yellow-700': transaction.status.toLowerCase() === 'pending',
+                  'bg-gray-100 text-gray-700':
+                    transaction.status.toLowerCase() !== 'completed' &&
+                    transaction.status.toLowerCase() !== 'failed' &&
+                    transaction.status.toLowerCase() !== 'pending',
+                }"
+              >
+                {{ transaction.status }}
+              </span>
+            </td>
+
+            <td class="whitespace-nowrap px-6 py-4 text-gray-700">
+              {{ transaction.submitDate | date: 'dd MMM yyyy' }}
+            </td>
+
+            <td class="whitespace-nowrap px-6 py-4 text-gray-700">
+              {{ transaction.country }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+
+  <div
+    class="flex flex-col gap-4 border-t border-gray-200 bg-gray-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <div class="text-sm text-gray-600">
+      Page
+
+      <span class="font-semibold">
+        {{ currentPage }}
+      </span>
+
+      of
+
+      <span class="font-semibold">
+        {{ totalPages }}
+      </span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button
+        (click)="previousPage()"
+        [disabled]="currentPage === 1"
+        class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Previous
+      </button>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages"
+        class="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>
