@@ -200,9 +200,11 @@ export class Dashboard {
       }))
       .sort((a, b) => b.count - a.count);
   });
+
   /**
-   * Signal for the currently selected month in the dashboard
-   * Used to filter transactions displayed in charts and summaries
+   * Signal to hold the currently selected month for filtering transactions
+   * - Format: 'YYYY-MM'
+   * - Used to filter transactions displayed in the "Transactions Over Time" chart
    */
 
   readonly selectedMonth = signal('');
@@ -222,6 +224,11 @@ export class Dashboard {
       return submitDate.getFullYear() === year && submitDate.getMonth() === month - 1;
     });
   });
+
+  onMonthChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectedMonth.set(input.value);
+  }
 
   /**
    * Number of transactions grouped by date
