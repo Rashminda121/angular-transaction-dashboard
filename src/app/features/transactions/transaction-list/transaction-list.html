@@ -65,13 +65,18 @@
           <select
             [(ngModel)]="selectedCurrency"
             class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            [disabled]="currencies.length === 0"
           >
             <option value="">All</option>
 
-            @for (currency of currencies; track currency) {
-              <option [value]="currency">
-                {{ currency }}
-              </option>
+            @if (currencies.length > 0) {
+              @for (currency of currencies; track currency) {
+                <option [value]="currency">
+                  {{ currency }}
+                </option>
+              }
+            } @else {
+              <option disabled>No currencies available</option>
             }
           </select>
         </div>
@@ -84,13 +89,18 @@
           <select
             [(ngModel)]="selectedCountry"
             class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            [disabled]="countries.length === 0"
           >
             <option value="">All</option>
 
-            @for (country of countries; track country) {
-              <option [value]="country">
-                {{ country }}
-              </option>
+            @if (countries.length > 0) {
+              @for (country of countries; track country) {
+                <option [value]="country">
+                  {{ country }}
+                </option>
+              }
+            } @else {
+              <option disabled>No countries available</option>
             }
           </select>
         </div>
@@ -147,21 +157,28 @@
 
               <!-- Options -->
 
-              @for (status of statuses; track status) {
-                <label
-                  class="flex cursor-pointer items-center gap-3 px-4 py-3 transition hover:bg-gray-50"
-                >
-                  <input
-                    type="checkbox"
-                    [checked]="selectedStatuses.includes(status)"
-                    (change)="toggleStatus(status)"
-                    class="h-4 w-4 rounded border-gray-300 text-blue-600"
-                  />
+              @if (statuses.length > 0) {
+                @for (status of statuses; track status) {
+                  <label
+                    class="flex cursor-pointer items-center gap-3 px-4 py-3 transition hover:bg-gray-50"
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="selectedStatuses.includes(status)"
+                      (change)="toggleStatus(status)"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600"
+                    />
 
-                  <span class="text-sm text-gray-700">
-                    {{ status }}
-                  </span>
-                </label>
+                    <span class="text-sm text-gray-700">
+                      {{ status }}
+                    </span>
+                  </label>
+                }
+              } @else {
+                <div class="px-4 py-6 text-center">
+                  <lucide-angular [img]="Icons.CircleAlert" class="mx-auto mb-2 h-5 w-5 text-gray-400"></lucide-angular>
+                  <p class="text-sm text-gray-500">No statuses available</p>
+                </div>
               }
             </div>
           }
@@ -311,48 +328,67 @@
       </thead>
 
       <tbody class="divide-y divide-gray-100">
-        @for (transaction of pagedTransactions; track transaction.transactionId) {
-          <tr
-            (click)="viewTransaction(transaction.transactionId)"
-            class="text-sm md:text-base cursor-pointer transition-colors hover:bg-gray-50"
-          >
-            <td class="whitespace-nowrap px-6 py-4">
-              <span class="font-medium text-gray-800">
-                {{ transaction.transactionId }}
-              </span>
-            </td>
-
-            <td class="whitespace-nowrap px-6 py-4 text-gray-700">
-              {{ transaction.currency }}
-            </td>
-
-            <td class="whitespace-nowrap px-6 py-4">
-              <span
-                class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
-                [ngClass]="{
-                  'bg-green-100 text-green-700': transaction.status.toLowerCase() === 'completed',
-                  'bg-red-100 text-red-700': transaction.status.toLowerCase() === 'failed',
-                  'bg-yellow-100 text-yellow-700': transaction.status.toLowerCase() === 'pending',
-                  'bg-gray-100 text-gray-700':
-                    transaction.status.toLowerCase() !== 'completed' &&
-                    transaction.status.toLowerCase() !== 'failed' &&
-                    transaction.status.toLowerCase() !== 'pending',
-                }"
-              >
-                {{ transaction.status }}
-              </span>
-            </td>
-
-            <td class="whitespace-nowrap px-6 py-4 text-gray-700">
-              {{ transaction.submitDate | date: 'dd MMM yyyy' }}
-            </td>
-
-            <td class="whitespace-nowrap px-6 py-4 text-gray-700">
-              {{ transaction.country }}
+        @if (pagedTransactions.length === 0) {
+          <tr>
+            <td colspan="5" class="px-6 py-12 text-center">
+              <div class="flex flex-col items-center justify-center gap-3">
+                <lucide-angular [img]="Icons.CircleAlert" class="h-12 w-12 text-gray-400"></lucide-angular>
+                <div>
+                  <p class="text-base font-semibold text-gray-700">No transactions found</p>
+                  <p class="mt-1 text-sm text-gray-500">
+                    @if (totalRecords === 0) {
+                      No transactions available in the system.
+                    } @else {
+                      Try adjusting your filters to see more results.
+                    }
+                  </p>
+                </div>
+              </div>
             </td>
           </tr>
+        } @else {
+          @for (transaction of pagedTransactions; track transaction.transactionId) {
+            <tr
+              (click)="viewTransaction(transaction.transactionId)"
+              class="text-sm md:text-base cursor-pointer transition-colors hover:bg-gray-50"
+            >
+              <td class="whitespace-nowrap px-6 py-4">
+                <span class="font-medium text-gray-800">
+                  {{ transaction.transactionId }}
+                </span>
+              </td>
+
+              <td class="whitespace-nowrap px-6 py-4 text-gray-700">
+                {{ transaction.currency }}
+              </td>
+
+              <td class="whitespace-nowrap px-6 py-4">
+                <span
+                  class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
+                  [ngClass]="{
+                    'bg-green-100 text-green-700': transaction.status.toLowerCase() === 'completed',
+                    'bg-red-100 text-red-700': transaction.status.toLowerCase() === 'failed',
+                    'bg-yellow-100 text-yellow-700': transaction.status.toLowerCase() === 'pending',
+                    'bg-gray-100 text-gray-700':
+                      transaction.status.toLowerCase() !== 'completed' &&
+                      transaction.status.toLowerCase() !== 'failed' &&
+                      transaction.status.toLowerCase() !== 'pending',
+                  }"
+                >
+                  {{ transaction.status }}
+                </span>
+              </td>
+
+              <td class="whitespace-nowrap px-6 py-4 text-gray-700">
+                {{ transaction.submitDate | date: 'dd MMM yyyy' }}
+              </td>
+
+              <td class="whitespace-nowrap px-6 py-4 text-gray-700">
+                {{ transaction.country }}
+              </td>
+            </tr>
+          }
         }
-      </tbody>
     </table>
   </div>
 
