@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Icons } from '@shared/icons/icons';
@@ -200,6 +200,28 @@ export class Dashboard {
       }))
       .sort((a, b) => b.count - a.count);
   });
+  /**
+   * Signal for the currently selected month in the dashboard
+   * Used to filter transactions displayed in charts and summaries
+   */
+
+  readonly selectedMonth = signal('');
+
+  readonly filteredTransactions = computed(() => {
+    const selectedMonth = this.selectedMonth();
+
+    if (!selectedMonth) {
+      return this.transactions();
+    }
+
+    const [year, month] = selectedMonth.split('-').map(Number);
+
+    return this.transactions().filter((transaction) => {
+      const submitDate = transaction.submitDate;
+
+      return submitDate.getFullYear() === year && submitDate.getMonth() === month - 1;
+    });
+  });
 
   /**
    * Number of transactions grouped by date
@@ -210,7 +232,7 @@ export class Dashboard {
   readonly transactionsOverTime = computed(() => {
     const dateCounts = new Map<string, number>();
 
-    for (const transaction of this.transactions()) {
+    for (const transaction of this.filteredTransactions()) {
       const date = new Intl.DateTimeFormat('en-CA').format(transaction.submitDate);
 
       dateCounts.set(date, (dateCounts.get(date) ?? 0) + 1);
@@ -285,6 +307,7 @@ export class Dashboard {
         data: this.transactionsPerMonth().map((item) => item.count),
         barWidth: '50%',
         itemStyle: {
+          color: '#3B82F6',
           borderRadius: [8, 8, 0, 0],
         },
       },
@@ -374,7 +397,11 @@ export class Dashboard {
         symbolSize: 8,
         areaStyle: {},
         lineStyle: {
+          color: '#14B8A6',
           width: 3,
+        },
+        itemStyle: {
+          color: '#14B8A6',
         },
       },
     ],
@@ -385,46 +412,63 @@ export class Dashboard {
    * Configures axes, tooltips, and series data based on the computed countryTransactionCounts signal.
    */
 
-  readonly topCountriesChartOptions = computed(() => ({
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow',
+  readonly topCountriesChartOptions = computed(() => {
+    const colors = [
+      '#3B82F6', // Blue
+      '#10B981', // Emerald
+      '#F59E0B', // Amber
+      '#8B5CF6', // Purple
+      '#06B6D4', // Cyan
+      '#EC4899', // Pink
+      '#14B8A6', // Teal
+      '#F97316', // Orange
+      '#6366F1', // Indigo
+    ];
+
+    return {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow',
+        },
       },
-    },
-    grid: {
-      left: '5%',
-      right: '5%',
-      top: '3%',
-      bottom: '3%',
-      containLabel: true,
-    },
-    xAxis: {
-      type: 'value',
-      name: 'Transactions',
-      minInterval: 1,
-    },
-    yAxis: {
-      type: 'category',
-      data: this.countryTransactionCounts().map((item) => item.country),
-      inverse: true,
-    },
-    series: [
-      {
+      grid: {
+        left: '5%',
+        right: '5%',
+        top: '3%',
+        bottom: '3%',
+        containLabel: true,
+      },
+      xAxis: {
+        type: 'value',
         name: 'Transactions',
-        type: 'bar',
-        data: this.countryTransactionCounts().map((item) => item.count),
-        barWidth: '55%',
-        itemStyle: {
-          borderRadius: [0, 8, 8, 0],
-        },
-        label: {
-          show: true,
-          position: 'right',
-        },
+        minInterval: 1,
       },
-    ],
-  }));
+      yAxis: {
+        type: 'category',
+        data: this.countryTransactionCounts().map((item) => item.country),
+        inverse: true,
+      },
+      series: [
+        {
+          name: 'Transactions',
+          type: 'bar',
+          barWidth: '55%',
+          data: this.countryTransactionCounts().map((item, index) => ({
+            value: item.count,
+            itemStyle: {
+              color: colors[index % colors.length],
+              borderRadius: [0, 8, 8, 0],
+            },
+          })),
+          label: {
+            show: true,
+            position: 'right',
+          },
+        },
+      ],
+    };
+  });
 
   /**
    * Dashboard cards for quick access to transaction summaries.
