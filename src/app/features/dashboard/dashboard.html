@@ -81,11 +81,10 @@
 
         <span class="text-sm text-slate-500"> Current Dataset </span>
       </div>
-
-      <div class="mt-6 flex flex-wrap gap-3">
+      <div class="mt-6 flex flex-wrap justify-center gap-3 sm:justify-start">
         @for (currency of currencyDistribution(); track currency.currency) {
           <div
-            class="flex min-h-32 min-w-[100px] flex-col items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm"
+            class="flex min-h-32 min-w-[100px] flex-col items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 text-center shadow-sm"
           >
             <span class="text-sm font-semibold text-slate-500">
               {{ currency.currency }}
