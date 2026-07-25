@@ -1,1 +1,219 @@
-<p>dashboard works!</p>
+<div class="w-full space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 lg:px-8">
+  <!-- Header -->
+
+  <section class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl lg:text-4xl">
+        Transaction Dashboard
+      </h1>
+
+      <p class="mt-2 text-sm text-slate-600 sm:text-base">
+        Monitor transaction performance and key business metrics.
+      </p>
+    </div>
+
+    <a
+      routerLink="/"
+      class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-all hover:border-slate-400 hover:bg-slate-50 hover:shadow sm:w-fit"
+    >
+      <lucide-angular [img]="Icons.ArrowLeft" class="h-4 w-4"></lucide-angular>
+
+      <span>Back to Home</span>
+    </a>
+  </section>
+
+  <!-- KPI Cards -->
+
+  <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+    >
+      <p class="text-sm font-medium text-slate-500">Total Transactions</p>
+
+      <h2 class="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">15,249</h2>
+
+      <p class="mt-3 text-sm text-emerald-600">+8.2% this month</p>
+    </div>
+
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+    >
+      <p class="text-sm font-medium text-slate-500">Completed</p>
+
+      <h2 class="mt-3 text-3xl font-bold text-emerald-600 sm:text-4xl">10,542</h2>
+
+      <p class="mt-3 text-sm text-slate-500">69.1% of transactions</p>
+    </div>
+
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+    >
+      <p class="text-sm font-medium text-slate-500">Pending</p>
+
+      <h2 class="mt-3 text-3xl font-bold text-amber-500 sm:text-4xl">2,743</h2>
+
+      <p class="mt-3 text-sm text-slate-500">Awaiting processing</p>
+    </div>
+
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+    >
+      <p class="text-sm font-medium text-slate-500">Failed</p>
+
+      <h2 class="mt-3 text-3xl font-bold text-red-500 sm:text-4xl">1,201</h2>
+
+      <p class="mt-3 text-sm text-slate-500">Requires attention</p>
+    </div>
+
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+    >
+      <p class="text-sm font-medium text-slate-500">Others</p>
+
+      <h2 class="mt-3 text-3xl font-bold text-slate-700 sm:text-4xl">763</h2>
+
+      <p class="mt-3 text-sm text-slate-500">Miscellaneous statuses</p>
+    </div>
+  </section>
+
+  <!-- Summary -->
+
+  <section class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <!-- Top Countries -->
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-lg font-semibold text-slate-900">Top 5 Countries</h2>
+
+        <span class="text-sm text-slate-500"> By Transaction Count </span>
+      </div>
+
+      <div class="mt-6 space-y-3">
+        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+          <span>Sri Lanka</span>
+          <span class="font-semibold">2,452</span>
+        </div>
+
+        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+          <span>India</span>
+          <span class="font-semibold">2,198</span>
+        </div>
+
+        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+          <span>United States</span>
+          <span class="font-semibold">1,963</span>
+        </div>
+
+        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+          <span>Australia</span>
+          <span class="font-semibold">1,547</span>
+        </div>
+
+        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+          <span>United Kingdom</span>
+          <span class="font-semibold">1,213</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Currency -->
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-lg font-semibold text-slate-900">Currency Distribution</h2>
+
+        <span class="text-sm text-slate-500"> Current Dataset </span>
+      </div>
+
+      <div class="mt-6 space-y-5">
+        <div>
+          <div class="mb-2 flex justify-between text-sm">
+            <span>USD</span>
+            <span>45%</span>
+          </div>
+
+          <div class="h-2 overflow-hidden rounded-full bg-slate-200">
+            <div class="h-full w-[45%] rounded-full bg-blue-600"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-2 flex justify-between text-sm">
+            <span>EUR</span>
+            <span>25%</span>
+          </div>
+
+          <div class="h-2 overflow-hidden rounded-full bg-slate-200">
+            <div class="h-full w-[25%] rounded-full bg-emerald-500"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-2 flex justify-between text-sm">
+            <span>LKR</span>
+            <span>18%</span>
+          </div>
+
+          <div class="h-2 overflow-hidden rounded-full bg-slate-200">
+            <div class="h-full w-[18%] rounded-full bg-amber-500"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-2 flex justify-between text-sm">
+            <span>GBP</span>
+            <span>12%</span>
+          </div>
+
+          <div class="h-2 overflow-hidden rounded-full bg-slate-200">
+            <div class="h-full w-[12%] rounded-full bg-purple-500"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts -->
+
+  <section class="grid grid-cols-1 gap-6 2xl:grid-cols-2">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="mb-5 text-lg font-semibold text-slate-900">Transactions by Status</h2>
+
+      <div
+        class="flex h-64 items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 sm:h-72 lg:h-80"
+      >
+        <span class="text-slate-400">Bar Chart</span>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="mb-5 text-lg font-semibold text-slate-900">Currency Distribution</h2>
+
+      <div
+        class="flex h-64 items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 sm:h-72 lg:h-80"
+      >
+        <span class="text-slate-400">Doughnut Chart</span>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="mb-5 text-lg font-semibold text-slate-900">Transactions Over Time</h2>
+
+      <div
+        class="flex h-64 items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 sm:h-72 lg:h-80"
+      >
+        <span class="text-slate-400">Line Chart</span>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="mb-5 text-lg font-semibold text-slate-900">Top Countries</h2>
+
+      <div
+        class="flex h-64 items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 sm:h-72 lg:h-80"
+      >
+        <span class="text-slate-400">Horizontal Bar Chart</span>
+      </div>
+    </div>
+  </section>
+</div>
