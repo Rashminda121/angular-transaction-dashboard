@@ -1,12 +1,12 @@
-import { Component, computed, inject } from '@angular/core';
-import { LucideAngularModule } from 'lucide-angular';
-import { Icons } from '@shared/icons/icons';
-import { RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { TransactionService } from '../transactions/services/transaction-service';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
+import { Icons } from '@shared/icons/icons';
+import { LucideAngularModule, LucideIconData } from 'lucide-angular';
+import { NgxEchartsDirective } from 'ngx-echarts';
 import { Transaction } from '../transactions/models/transaction';
-import { LucideIconData } from 'lucide-angular';
+import { TransactionService } from '../transactions/services/transaction-service';
 import { KpiCards } from './components/kpi-cards/kpi-cards';
 
 /**
@@ -36,6 +36,12 @@ interface DashboardCard {
   queryParams?: Record<string, string>;
 }
 
+interface StatusSummary {
+  status: string;
+  count: number;
+  percentage: number;
+}
+
 /**
  * Dashboard Component
  *
@@ -47,7 +53,7 @@ interface DashboardCard {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [LucideAngularModule, RouterLink, CommonModule, KpiCards],
+  imports: [LucideAngularModule, RouterLink, CommonModule, KpiCards, NgxEchartsDirective],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -144,6 +150,286 @@ export class Dashboard {
       }))
       .sort((a, b) => b.count - a.count);
   });
+
+  /**
+   * Number of transactions grouped by month
+   */
+  readonly transactionsPerMonth = computed(() => {
+    const monthCounts = new Map<string, number>();
+
+    for (const transaction of this.transactions()) {
+      const month = new Intl.DateTimeFormat('en', {
+        month: 'short',
+        year: 'numeric',
+      }).format(transaction.submitDate);
+
+      monthCounts.set(month, (monthCounts.get(month) ?? 0) + 1);
+    }
+
+    return [...monthCounts.entries()]
+      .map(([month, count]) => ({
+        month,
+        count,
+      }))
+      .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime());
+  });
+
+  /**
+   * Breakdown of transactions by status
+   * - Groups transactions by status
+   * - Calculates percentage of total for each status
+   * - Sorts in descending order by count
+   */
+
+  readonly statusBreakdown = computed<StatusSummary[]>(() => {
+    const statusCounts = new Map<string, number>();
+
+    for (const transaction of this.transactions()) {
+      const status = transaction.status;
+
+      statusCounts.set(status, (statusCounts.get(status) ?? 0) + 1);
+    }
+
+    const total = this.totalTransactions();
+
+    return [...statusCounts.entries()]
+      .map(([status, count]) => ({
+        status,
+        count,
+        percentage: total === 0 ? 0 : (count / total) * 100,
+      }))
+      .sort((a, b) => b.count - a.count);
+  });
+
+  /**
+   * Number of transactions grouped by date
+   * - Groups transactions by submission date
+   * - Sorts in ascending order by date
+   */
+
+  readonly transactionsOverTime = computed(() => {
+    const dateCounts = new Map<string, number>();
+
+    for (const transaction of this.transactions()) {
+      const date = new Intl.DateTimeFormat('en-CA').format(transaction.submitDate);
+
+      dateCounts.set(date, (dateCounts.get(date) ?? 0) + 1);
+    }
+
+    return [...dateCounts.entries()]
+      .map(([date, count]) => ({
+        date,
+        count,
+      }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  });
+
+  /**
+   * Top countries ranked by transaction count.
+   * Returns up to the top 10 countries for use in a horizontal bar chart.
+   */
+  readonly countryTransactionCounts = computed<CountrySummary[]>(() => {
+    const countryCounts = new Map<string, number>();
+
+    for (const transaction of this.transactions()) {
+      const country = transaction.country.trim();
+
+      countryCounts.set(country, (countryCounts.get(country) ?? 0) + 1);
+    }
+
+    return [...countryCounts.entries()]
+      .map(([country, count]) => ({
+        country,
+        count,
+      }))
+      .sort((a, b) => {
+        if (b.count !== a.count) {
+          return b.count - a.count;
+        }
+
+        return a.country.localeCompare(b.country);
+      })
+      .slice(0, 10);
+  });
+
+  /**
+   * Chart options for displaying transactions per month in a bar chart.
+   * Configures axes, tooltips, and series data based on the computed transactionsPerMonth signal.
+   */
+
+  readonly transactionsPerMonthChartOptions = computed(() => ({
+    tooltip: {
+      trigger: 'axis',
+    },
+    grid: {
+      left: '3%',
+      right: '3%',
+      bottom: '3%',
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'category',
+      data: this.transactionsPerMonth().map((item) => item.month),
+      axisTick: {
+        alignWithLabel: true,
+      },
+    },
+    yAxis: {
+      type: 'value',
+      name: 'Transactions',
+    },
+    series: [
+      {
+        name: 'Transactions',
+        type: 'bar',
+        data: this.transactionsPerMonth().map((item) => item.count),
+        barWidth: '50%',
+        itemStyle: {
+          borderRadius: [8, 8, 0, 0],
+        },
+      },
+    ],
+  }));
+
+  /**
+   * Chart options for displaying the breakdown of transactions by status in a pie chart.
+   * Configures tooltips, legend, and series data based on the computed statusBreakdown signal.
+   */
+
+  readonly statusBreakdownChartOptions = computed(() => ({
+    tooltip: {
+      trigger: 'item',
+      formatter: ({ name, value, percent }: { name: string; value: number; percent: number }) =>
+        `${name}<br/>${value} transactions (${percent}%)`,
+    },
+    legend: {
+      bottom: 0,
+      left: 'center',
+    },
+    series: [
+      {
+        name: 'Transactions',
+        type: 'pie',
+        radius: ['55%', '75%'],
+        avoidLabelOverlap: true,
+        itemStyle: {
+          borderRadius: 8,
+          borderColor: '#fff',
+          borderWidth: 2,
+        },
+        label: {
+          show: true,
+          formatter: '{d}%',
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 16,
+            fontWeight: 'bold',
+          },
+        },
+        data: this.statusBreakdown().map((item) => ({
+          name: item.status,
+          value: item.count,
+        })),
+      },
+    ],
+  }));
+
+  /**
+   * Chart options for displaying the number of transactions over time in a line chart.
+   * Configures axes, tooltips, and series data based on the computed transactionsOverTime signal.
+   */
+
+  readonly transactionsOverTimeChartOptions = computed(() => ({
+    tooltip: {
+      trigger: 'axis',
+    },
+    grid: {
+      left: '3%',
+      right: '3%',
+      bottom: '3%',
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'category',
+      data: this.transactionsOverTime().map((item) => item.date),
+      boundaryGap: false,
+      axisLabel: {
+        rotate: 45,
+      },
+    },
+    yAxis: {
+      type: 'value',
+      name: 'Transactions',
+      minInterval: 1,
+    },
+    series: [
+      {
+        name: 'Transactions',
+        type: 'line',
+        smooth: true,
+        data: this.transactionsOverTime().map((item) => item.count),
+        symbol: 'circle',
+        symbolSize: 8,
+        areaStyle: {},
+        lineStyle: {
+          width: 3,
+        },
+      },
+    ],
+  }));
+
+  /**
+   * Chart options for displaying the top countries by transaction count in a horizontal bar chart.
+   * Configures axes, tooltips, and series data based on the computed countryTransactionCounts signal.
+   */
+
+  readonly topCountriesChartOptions = computed(() => ({
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+    },
+    grid: {
+      left: '5%',
+      right: '5%',
+      top: '3%',
+      bottom: '3%',
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'value',
+      name: 'Transactions',
+      minInterval: 1,
+    },
+    yAxis: {
+      type: 'category',
+      data: this.countryTransactionCounts().map((item) => item.country),
+      inverse: true,
+    },
+    series: [
+      {
+        name: 'Transactions',
+        type: 'bar',
+        data: this.countryTransactionCounts().map((item) => item.count),
+        barWidth: '55%',
+        itemStyle: {
+          borderRadius: [0, 8, 8, 0],
+        },
+        label: {
+          show: true,
+          position: 'right',
+        },
+      },
+    ],
+  }));
+
+  /**
+   * Dashboard cards for quick access to transaction summaries.
+   * Each card displays a title, value, description, icon, and navigation route.
+   */
 
   readonly cards = computed<DashboardCard[]>(() => [
     {
