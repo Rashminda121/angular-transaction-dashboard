@@ -61,30 +61,15 @@
       </div>
 
       <div class="mt-6 space-y-3">
-        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-          <span>Sri Lanka</span>
-          <span class="font-semibold">2,452</span>
-        </div>
+        @for (country of topCountries(); track country.country) {
+          <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+            <span>{{ country.country }}</span>
 
-        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-          <span>India</span>
-          <span class="font-semibold">2,198</span>
-        </div>
-
-        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-          <span>United States</span>
-          <span class="font-semibold">1,963</span>
-        </div>
-
-        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-          <span>Australia</span>
-          <span class="font-semibold">1,547</span>
-        </div>
-
-        <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-          <span>United Kingdom</span>
-          <span class="font-semibold">1,213</span>
-        </div>
+            <span class="font-semibold">
+              {{ country.count }}
+            </span>
+          </div>
+        }
       </div>
     </div>
 
@@ -97,50 +82,24 @@
         <span class="text-sm text-slate-500"> Current Dataset </span>
       </div>
 
-      <div class="mt-6 space-y-5">
-        <div>
-          <div class="mb-2 flex justify-between text-sm">
-            <span>USD</span>
-            <span>45%</span>
-          </div>
+      <div class="mt-6 flex flex-wrap gap-3">
+        @for (currency of currencyDistribution(); track currency.currency) {
+          <div
+            class="flex min-h-32 min-w-[100px] flex-col items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm"
+          >
+            <span class="text-sm font-semibold text-slate-500">
+              {{ currency.currency }}
+            </span>
 
-          <div class="h-2 overflow-hidden rounded-full bg-slate-200">
-            <div class="h-full w-[45%] rounded-full bg-blue-600"></div>
-          </div>
-        </div>
+            <span class="mt-2 text-lg font-bold text-slate-900">
+              {{ currency.count }}
+            </span>
 
-        <div>
-          <div class="mb-2 flex justify-between text-sm">
-            <span>EUR</span>
-            <span>25%</span>
+            <span class="mt-2 text-xs text-slate-500">
+              {{ currency.percentage | number: '1.0-1' }}%
+            </span>
           </div>
-
-          <div class="h-2 overflow-hidden rounded-full bg-slate-200">
-            <div class="h-full w-[25%] rounded-full bg-emerald-500"></div>
-          </div>
-        </div>
-
-        <div>
-          <div class="mb-2 flex justify-between text-sm">
-            <span>LKR</span>
-            <span>18%</span>
-          </div>
-
-          <div class="h-2 overflow-hidden rounded-full bg-slate-200">
-            <div class="h-full w-[18%] rounded-full bg-amber-500"></div>
-          </div>
-        </div>
-
-        <div>
-          <div class="mb-2 flex justify-between text-sm">
-            <span>GBP</span>
-            <span>12%</span>
-          </div>
-
-          <div class="h-2 overflow-hidden rounded-full bg-slate-200">
-            <div class="h-full w-[12%] rounded-full bg-purple-500"></div>
-          </div>
-        </div>
+        }
       </div>
     </div>
   </section>
