@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 /**
  * Not Found Component
@@ -9,7 +10,7 @@ import { Component } from '@angular/core';
  */
 @Component({
   selector: 'app-not-found',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './not-found.html',
   styleUrl: './not-found.scss',
 })
