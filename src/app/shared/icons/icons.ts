@@ -1,14 +1,20 @@
 import {
   ArrowLeft,
+  ArrowRight,
+  BadgeDollarSign,
+  Banknote,
   CalendarDays,
   CircleAlert,
   CircleCheckBig,
+  CircleX,
+  Clock3,
+  Ellipsis,
   Globe,
-  Banknote,
+  Globe2,
+  LayoutDashboard,
+  LucideAngularModule,
   ReceiptText,
   X,
-  LayoutDashboard,
-  ArrowRight,
 } from 'lucide-angular';
 
 export const Icons = {
@@ -22,4 +28,10 @@ export const Icons = {
   X,
   LayoutDashboard,
   ArrowRight,
+  BadgeDollarSign,
+  CircleX,
+  Clock3,
+  Ellipsis,
+  Globe2,
+  LucideAngularModule,
 };
