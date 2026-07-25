@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { Transaction } from '../models/transaction';
 import { TransactionService } from '../services/transaction-service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { Icons } from '@shared/icons/icons';
 
@@ -16,7 +16,7 @@ type SortDirection = 'asc' | 'desc';
 @Component({
   selector: 'app-transaction-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, RouterLink],
   templateUrl: './transaction-list.html',
   styleUrl: './transaction-list.scss',
 })
