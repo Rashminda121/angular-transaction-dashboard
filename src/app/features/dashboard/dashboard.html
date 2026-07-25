@@ -12,14 +12,25 @@
       </p>
     </div>
 
-    <a
-      routerLink="/"
-      class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-all hover:border-slate-400 hover:bg-slate-50 hover:shadow sm:w-fit"
-    >
-      <lucide-angular [img]="Icons.ArrowLeft" class="h-4 w-4"></lucide-angular>
+    <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+      <a
+        routerLink="/transactions"
+        class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-slate-800 hover:shadow sm:w-fit"
+      >
+        <lucide-angular [img]="Icons.ReceiptText" class="h-4 w-4"></lucide-angular>
 
-      <span>Back to Home</span>
-    </a>
+        <span>Transactions</span>
+      </a>
+
+      <a
+        routerLink="/"
+        class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-all hover:border-slate-400 hover:bg-slate-50 hover:shadow sm:w-fit"
+      >
+        <lucide-angular [img]="Icons.ArrowLeft" class="h-4 w-4"></lucide-angular>
+
+        <span>Back to Home</span>
+      </a>
+    </div>
   </section>
 
   <!-- KPI Cards -->

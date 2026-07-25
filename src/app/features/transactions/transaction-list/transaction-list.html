@@ -5,7 +5,7 @@
     <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <!-- Title -->
       <div>
-        <h2 class="text-xl font-semibold text-gray-800">Transactions</h2>
+        <h2 class="text-2xl font-semibold text-gray-800">Transactions</h2>
 
         <p class="text-sm text-gray-500">Filter and manage transaction records.</p>
       </div>
@@ -17,6 +17,15 @@
         >
           {{ totalRecords }} Records
         </div>
+
+        <button
+          routerLink="/dashboard"
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:cursor-pointer hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600"
+        >
+          <lucide-angular [img]="Icons.LayoutDashboard" class="h-4 w-4"></lucide-angular>
+
+          Dashboard
+        </button>
 
         <button
           routerLink="/"

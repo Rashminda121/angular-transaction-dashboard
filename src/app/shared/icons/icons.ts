@@ -10,7 +10,6 @@ import {
   Clock3,
   Ellipsis,
   Globe,
-  Globe2,
   LayoutDashboard,
   LucideAngularModule,
   ReceiptText,
@@ -32,6 +31,5 @@ export const Icons = {
   CircleX,
   Clock3,
   Ellipsis,
-  Globe2,
   LucideAngularModule,
 };
