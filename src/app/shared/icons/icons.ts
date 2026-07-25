@@ -7,6 +7,8 @@ import {
   Banknote,
   ReceiptText,
   X,
+  LayoutDashboard,
+  ArrowRight,
 } from 'lucide-angular';
 
 export const Icons = {
@@ -18,4 +20,6 @@ export const Icons = {
   Banknote,
   ReceiptText,
   X,
+  LayoutDashboard,
+  ArrowRight,
 };
