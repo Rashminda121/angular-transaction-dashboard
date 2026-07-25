@@ -5,6 +5,16 @@ import { NotFound } from './features/not-found/not-found';
 import { TransactionDetail } from './features/transactions/transaction-detail/transaction-detail';
 import { TransactionList } from './features/transactions/transaction-list/transaction-list';
 
+/**
+ * Application routing configuration.
+ * Defines routes for all features and a wildcard fallback route.
+ * Routes:
+ * - '' (root): Home component
+ * - 'dashboard': Dashboard component
+ * - 'transactions': Transaction list component
+ * - 'transactions/:id': Transaction detail component
+ * - '**': Not found component (fallback)
+ */
 export const routes: Routes = [
   {
     path: '',

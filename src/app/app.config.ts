@@ -18,6 +18,11 @@ import {
 
 import { CanvasRenderer } from 'echarts/renderers';
 
+/**
+ * Register chart types and components for ECharts.
+ * Includes: BarChart, LineChart, PieChart, GridComponent, TooltipComponent,
+ * LegendComponent, TitleComponent, and CanvasRenderer.
+ */
 echarts.use([
   BarChart,
   LineChart,
@@ -29,6 +34,14 @@ echarts.use([
   CanvasRenderer,
 ]);
 
+/**
+ * Application configuration.
+ * Provides:
+ * - Router configuration with application routes
+ * - HTTP client for making API requests
+ * - ECharts with core functionality and chart types (Bar, Line, Pie)
+ * - Global error listeners for handling unhandled errors
+ */
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),

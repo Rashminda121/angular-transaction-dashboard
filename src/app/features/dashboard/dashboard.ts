@@ -10,7 +10,10 @@ import { TransactionService } from '../transactions/services/transaction-service
 import { KpiCards } from './components/kpi-cards/kpi-cards';
 
 /**
- * Represents a summary of transactions by country
+ * Transaction summary grouped by country.
+ * @interface CountrySummary
+ * @property {string} country - Country code
+ * @property {number} count - Number of transactions for this country
  */
 interface CountrySummary {
   country: string;
@@ -18,7 +21,11 @@ interface CountrySummary {
 }
 
 /**
- * Represents a summary of transactions by currency with percentage distribution
+ * Transaction summary grouped by currency with percentage distribution.
+ * @interface CurrencySummary
+ * @property {string} currency - Currency code
+ * @property {number} count - Number of transactions in this currency
+ * @property {number} percentage - Percentage of total transactions
  */
 interface CurrencySummary {
   currency: string;
@@ -26,6 +33,17 @@ interface CurrencySummary {
   percentage: number;
 }
 
+/**
+ * Dashboard card configuration for displaying KPI metrics.
+ * @interface DashboardCard
+ * @property {string} title - Card title
+ * @property {number} value - KPI metric value
+ * @property {string} description - Card description
+ * @property {string} valueClass - CSS class for styling the value
+ * @property {LucideIconData} icon - Icon displayed on the card
+ * @property {string} route - Navigation route for the card
+ * @property {Record<string, string>} [queryParams] - Optional query parameters for navigation
+ */
 interface DashboardCard {
   title: string;
   value: number;
@@ -36,6 +54,13 @@ interface DashboardCard {
   queryParams?: Record<string, string>;
 }
 
+/**
+ * Transaction summary grouped by status with percentage distribution.
+ * @interface StatusSummary
+ * @property {string} status - Transaction status value
+ * @property {number} count - Number of transactions with this status
+ * @property {number} percentage - Percentage of total transactions
+ */
 interface StatusSummary {
   status: string;
   count: number;
@@ -58,44 +83,66 @@ interface StatusSummary {
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
+  /** Reference to available icons for use in chart configurations */
   protected readonly Icons = Icons;
 
   /** Service for fetching transaction data */
   private readonly transactionService = inject(TransactionService);
 
   /**
-   * Signal containing all transactions from the service
-   * Converts the Observable stream to a reactive signal
+   * Signal containing all transactions from the service.
+   * Converts the Observable stream to a reactive signal for easier template binding.
+   * @readonly
    */
   readonly transactions = toSignal(this.transactionService.getTransactions(), {
     initialValue: [] as Transaction[],
   });
 
-  /** Total number of all transactions */
+  /**
+   * Total count of all transactions.
+   * @readonly
+   * @computed
+   */
   readonly totalTransactions = computed(() => this.transactions().length);
 
-  /** Count of transactions with 'completed' status */
+  /**
+   * Count of transactions with 'completed' status.
+   * @readonly
+   * @computed
+   */
   readonly completedTransactions = computed(
     () =>
       this.transactions().filter((transaction) => transaction.status.toLowerCase() === 'completed')
         .length,
   );
 
-  /** Count of transactions with 'pending' status */
+  /**
+   * Count of transactions with 'pending' status.
+   * @readonly
+   * @computed
+   */
   readonly pendingTransactions = computed(
     () =>
       this.transactions().filter((transaction) => transaction.status.toLowerCase() === 'pending')
         .length,
   );
 
-  /** Count of transactions with 'failed' status */
+  /**
+   * Count of transactions with 'failed' status.
+   * @readonly
+   * @computed
+   */
   readonly failedTransactions = computed(
     () =>
       this.transactions().filter((transaction) => transaction.status.toLowerCase() === 'failed')
         .length,
   );
 
-  /** Count of transactions with any status other than completed, pending, or failed */
+  /**
+   * Count of transactions with any status other than completed, pending, or failed.
+   * @readonly
+   * @computed
+   */
   readonly otherTransactions = computed(
     () =>
       this.transactions().filter((transaction) => {
@@ -202,13 +249,19 @@ export class Dashboard {
   });
 
   /**
-   * Signal to hold the currently selected month for filtering transactions
-   * - Format: 'YYYY-MM'
-   * - Used to filter transactions displayed in the "Transactions Over Time" chart
+   * Signal to hold the currently selected month for filtering transactions over time.
+   * Format: 'YYYY-MM'
+   * Used to filter transactions displayed in the "Transactions Over Time" chart.
+   * @readonly
    */
-
   readonly selectedMonth = signal('');
 
+  /**
+   * Filtered transactions based on the selected month.
+   * If no month is selected, returns all transactions.
+   * @readonly
+   * @computed
+   */
   readonly filteredTransactions = computed(() => {
     const selectedMonth = this.selectedMonth();
 
@@ -225,6 +278,11 @@ export class Dashboard {
     });
   });
 
+  /**
+   * Handles month selection change events from the input element.
+   * Updates the selectedMonth signal with the new value.
+   * @param event HTML change event from the month input
+   */
   onMonthChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.selectedMonth.set(input.value);

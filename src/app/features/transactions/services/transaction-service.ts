@@ -4,16 +4,26 @@ import { map, Observable, shareReplay } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@/environments/environment';
 
+/**
+ * Service for managing and fetching transaction data from a CSV file.
+ * Provides methods to retrieve all transactions or filter by ID.
+ * Caches the results for optimal performance.
+ * @class TransactionService
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class TransactionService {
+  /** HTTP client for making requests to fetch the CSV file */
   private readonly http = inject(HttpClient);
 
+  /** URL path to the CSV file containing transaction data */
   private readonly csvUrl = environment.transactionCsv;
 
   /**
-   * Fetches the CSV file and returns typed transactions.
+   * Fetches all transactions from the CSV file and returns them as a typed array.
+   * Results are cached and shared across multiple subscriptions.
+   * @returns {Observable<Transaction[]>} Observable of array of transactions
    */
   getTransactions(): Observable<Transaction[]> {
     return this.http.get(this.csvUrl, { responseType: 'text' }).pipe(
@@ -23,7 +33,11 @@ export class TransactionService {
   }
 
   /**
-   * Converts CSV text into Transaction[].
+   * Parses CSV text content into an array of Transaction objects.
+   * Expects CSV format with headers: transactionId,currency,status,submitDate,country
+   * @private
+   * @param {string} csv - Raw CSV text content
+   * @returns {Transaction[]} Array of parsed transactions
    */
   private parseCsv(csv: string): Transaction[] {
     const lines = csv.trim().split(/\r?\n/);
@@ -46,6 +60,11 @@ export class TransactionService {
       });
   }
 
+  /**
+   * Retrieves a single transaction by its ID.
+   * @param {string} id - The transaction ID to search for
+   * @returns {Observable<Transaction | undefined>} Observable of the matching transaction or undefined if not found
+   */
   getTransactionById(id: string): Observable<Transaction | undefined> {
     return this.getTransactions().pipe(
       map((transactions) => transactions.find((t) => t.transactionId === id)),
