@@ -3,7 +3,6 @@ import { Dashboard } from './features/dashboard/dashboard';
 import { Home } from './features/home/home';
 import { NotFound } from './features/not-found/not-found';
 import { TransactionDetail } from './features/transactions/transaction-detail/transaction-detail';
-import { TransactionList } from './features/transactions/transaction-list/transaction-list';
 
 /**
  * Application routing configuration.
@@ -26,7 +25,10 @@ export const routes: Routes = [
   },
   {
     path: 'transactions',
-    component: TransactionList,
+    loadComponent: () =>
+      import('./features/transactions/transaction-list/transaction-list').then(
+        (m) => m.TransactionList,
+      ),
   },
   {
     path: 'transactions/:id',
